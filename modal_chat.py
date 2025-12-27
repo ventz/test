@@ -199,6 +199,21 @@ async def get_chat_interface():
             display: none;
         }
 
+        .system-message {
+            text-align: center;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .system-message-content {
+            background: rgba(0,0,0,0.05);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+
         /* iPhone-specific styles - portrait mode, smaller screens */
         @media (max-width: 768px) and (orientation: portrait) {
             body {
@@ -349,7 +364,7 @@ async def get_chat_interface():
         let lastMessageId = 0;
         let pollInterval;
 
-        function setUsername() {
+        async function setUsername() {
             const input = document.getElementById('usernameInput');
             const newUsername = input.value.trim();
 
@@ -365,6 +380,19 @@ async def get_chat_interface():
             document.getElementById('messageInput').disabled = false;
             document.getElementById('sendButton').disabled = false;
             document.getElementById('messageInput').focus();
+
+            // Send join system message
+            await fetch('/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: 'SYSTEM',
+                    message: `${username} joined the chat`,
+                    type: 'system'
+                })
+            });
 
             // Start polling for messages
             loadMessages();
@@ -431,6 +459,18 @@ async def get_chat_interface():
         function appendMessage(msg) {
             const container = document.getElementById('messagesContainer');
             const messageDiv = document.createElement('div');
+
+            // Handle system messages
+            if (msg.type === 'system') {
+                messageDiv.className = 'system-message';
+                messageDiv.innerHTML = `
+                    <div class="system-message-content">${escapeHtml(msg.message)}</div>
+                `;
+                container.prepend(messageDiv);
+                return;
+            }
+
+            // Regular messages
             messageDiv.className = 'message' + (msg.username === username ? ' own' : '');
 
             const time = new Date(msg.timestamp).toLocaleTimeString([], {
@@ -479,6 +519,20 @@ async def get_chat_interface():
 
         // Focus username input on load
         document.getElementById('usernameInput').focus();
+
+        // Handle disconnect
+        window.addEventListener('beforeunload', function() {
+            if (username) {
+                // Send disconnect system message
+                const data = JSON.stringify({
+                    username: 'SYSTEM',
+                    message: `${username} left the chat`,
+                    type: 'system'
+                });
+                const blob = new Blob([data], { type: 'application/json' });
+                navigator.sendBeacon('/send', blob);
+            }
+        });
     </script>
 </body>
 </html>
@@ -491,6 +545,7 @@ async def send_message(request: Request):
     data = await request.json()
     username = data.get("username", "Anonymous")
     message = data.get("message", "")
+    msg_type = data.get("type", "regular")  # Support system messages
 
     if not message.strip():
         return JSONResponse({"error": "Empty message"}, status_code=400)
@@ -500,7 +555,8 @@ async def send_message(request: Request):
         "id": len(messages) + 1,
         "username": username[:20],  # Limit username length
         "message": message[:500],  # Limit message length
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
+        "type": msg_type  # Include message type
     }
 
     messages.append(msg)
