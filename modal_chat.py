@@ -267,6 +267,7 @@ async def get_chat_interface():
                 order: 1;
                 text-align: center;
                 font-weight: 600;
+                flex: 0 0 auto;
             }
 
             .messages-container {
@@ -276,6 +277,7 @@ async def get_chat_interface():
                 flex-direction: column-reverse;
                 justify-content: flex-start;
                 order: 2;
+                flex: 1 1 auto;
             }
 
             .message {
@@ -319,6 +321,7 @@ async def get_chat_interface():
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
                 order: 3;
+                flex: 0 0 auto;
             }
 
             .input-section input {
