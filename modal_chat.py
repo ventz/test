@@ -8,12 +8,19 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from datetime import datetime
 from typing import List, Dict
+import json
+import pathlib
 
 # Create Modal app
 app = modal.App("tesla-car-chat")
 
 # Create Modal image with required dependencies
 image = modal.Image.debian_slim().pip_install("fastapi[standard]")
+
+# Create Volume for persistent storage
+volume = modal.Volume.from_name("chat-history", create_if_missing=True, version=2)
+VOLUME_PATH = "/data"
+MESSAGES_FILE = pathlib.Path(VOLUME_PATH) / "messages.json"
 
 # In-memory storage for messages (module-level for persistence)
 messages: List[Dict] = []
@@ -569,6 +576,9 @@ async def send_message(request: Request):
     if len(messages) > MAX_MESSAGES:
         messages.pop(0)
 
+    # Save to persistent storage
+    save_messages()
+
     return JSONResponse({"success": True, "message_id": msg["id"]})
 
 @web_app.get("/messages")
@@ -582,8 +592,36 @@ async def health_check():
     """Health check endpoint."""
     return JSONResponse({"status": "healthy", "message_count": len(messages)})
 
+# Helper functions for persistent storage
+def load_messages():
+    """Load messages from volume storage."""
+    global messages
+    if MESSAGES_FILE.exists():
+        try:
+            with open(MESSAGES_FILE, 'r') as f:
+                messages = json.load(f)
+                print(f"Loaded {len(messages)} messages from storage")
+        except Exception as e:
+            print(f"Error loading messages: {e}")
+            messages = []
+    else:
+        print("No existing messages file, starting fresh")
+        messages = []
+
+def save_messages():
+    """Save messages to volume storage."""
+    try:
+        MESSAGES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(MESSAGES_FILE, 'w') as f:
+            json.dump(messages, f)
+        volume.commit()
+        print(f"Saved {len(messages)} messages to storage")
+    except Exception as e:
+        print(f"Error saving messages: {e}")
+
 # Expose the FastAPI app to Modal
-@app.function(image=image)
+@app.function(image=image, volumes={VOLUME_PATH: volume})
 @modal.asgi_app()
 def fastapi_app():
+    load_messages()  # Load existing messages on startup
     return web_app
