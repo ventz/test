@@ -259,8 +259,7 @@ async def get_chat_interface():
             }
 
             .current-user {
-                padding: 12px 16px;
-                padding-top: calc(12px + env(safe-area-inset-top));
+                padding: 8px 16px;
                 background: #007AFF;
                 border-bottom: 1px solid #0051D5;
                 font-size: 15px;
