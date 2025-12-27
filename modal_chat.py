@@ -345,17 +345,17 @@ async def get_chat_interface():
             <strong id="displayUsername"></strong>
         </div>
 
+        <div class="input-section">
+            <input type="text" id="messageInput" placeholder="Type a message..." disabled>
+            <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
+        </div>
+
         <div class="status" id="status">Connected</div>
 
         <div class="messages-container" id="messagesContainer">
             <div style="text-align: center; color: #999; padding: 20px;">
                 <p>Enter your name to start chatting</p>
             </div>
-        </div>
-
-        <div class="input-section">
-            <input type="text" id="messageInput" placeholder="Type a message..." disabled>
-            <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
         </div>
     </div>
 
