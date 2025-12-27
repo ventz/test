@@ -30,8 +30,10 @@ async def get_chat_interface():
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesla Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Chat</title>
     <style>
         * {
             margin: 0;
@@ -195,6 +197,104 @@ async def get_chat_interface():
 
         .status {
             display: none;
+        }
+
+        /* iPhone-specific styles - portrait mode, smaller screens */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .chat-container {
+                border-radius: 0;
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            .username-section {
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+            .username-section input {
+                padding: 14px 16px;
+                border-radius: 12px;
+                font-size: 17px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .username-section button {
+                padding: 14px 24px;
+                border-radius: 12px;
+                font-size: 17px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .current-user {
+                padding: 8px 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                font-size: 13px;
+            }
+
+            .messages-container {
+                padding: 16px;
+                background: #f5f5f5;
+            }
+
+            .message {
+                margin-bottom: 12px;
+                max-width: 80%;
+            }
+
+            .message-header {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+
+            .message-content {
+                padding: 12px 16px;
+                border-radius: 18px;
+                font-size: 17px;
+                line-height: 1.4;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            }
+
+            .message.own {
+                align-self: flex-end;
+            }
+
+            .message.own .message-content {
+                background: #007AFF;
+                color: white;
+                margin-left: 0;
+            }
+
+            .input-section {
+                padding: 12px 16px;
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+                background: #fff;
+                border-top: 1px solid #e5e5e5;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            }
+
+            .input-section input {
+                padding: 12px 16px;
+                border-radius: 20px;
+                font-size: 17px;
+                border: 1px solid #e5e5e5;
+            }
+
+            .input-section button {
+                padding: 12px 24px;
+                border-radius: 20px;
+                font-size: 17px;
+                background: #007AFF;
+            }
+
+            .input-section button:hover {
+                background: #0051D5;
+            }
         }
     </style>
 </head>
