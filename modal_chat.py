@@ -8,7 +8,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from datetime import datetime
 from typing import List, Dict
-import asyncio
 
 # Create Modal app
 app = modal.App("tesla-car-chat")
@@ -16,21 +15,17 @@ app = modal.App("tesla-car-chat")
 # Create Modal image with required dependencies
 image = modal.Image.debian_slim().pip_install("fastapi[standard]")
 
-# In-memory storage for messages
+# In-memory storage for messages (module-level for persistence)
 messages: List[Dict] = []
 MAX_MESSAGES = 100  # Keep only last 100 messages
 
+# Create FastAPI app
+web_app = FastAPI()
 
-@app.function(image=image)
-@modal.asgi_app()
-def fastapi_app():
-    """Create and configure the FastAPI application."""
-    web_app = FastAPI()
-
-    @web_app.get("/", response_class=HTMLResponse)
-    async def get_chat_interface():
-        """Serve the main chat interface."""
-        html_content = """
+@web_app.get("/", response_class=HTMLResponse)
+async def get_chat_interface():
+    """Serve the main chat interface."""
+    html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -389,44 +384,48 @@ def fastapi_app():
     </script>
 </body>
 </html>
-        """
-        return HTMLResponse(content=html_content)
+    """
+    return HTMLResponse(content=html_content)
 
-    @web_app.post("/send")
-    async def send_message(request: Request):
-        """Receive and store a new message."""
-        data = await request.json()
-        username = data.get("username", "Anonymous")
-        message = data.get("message", "")
+@web_app.post("/send")
+async def send_message(request: Request):
+    """Receive and store a new message."""
+    data = await request.json()
+    username = data.get("username", "Anonymous")
+    message = data.get("message", "")
 
-        if not message.strip():
-            return JSONResponse({"error": "Empty message"}, status_code=400)
+    if not message.strip():
+        return JSONResponse({"error": "Empty message"}, status_code=400)
 
-        # Create message object
-        msg = {
-            "id": len(messages) + 1,
-            "username": username[:20],  # Limit username length
-            "message": message[:500],  # Limit message length
-            "timestamp": datetime.utcnow().isoformat()
-        }
+    # Create message object
+    msg = {
+        "id": len(messages) + 1,
+        "username": username[:20],  # Limit username length
+        "message": message[:500],  # Limit message length
+        "timestamp": datetime.utcnow().isoformat()
+    }
 
-        messages.append(msg)
+    messages.append(msg)
 
-        # Keep only last MAX_MESSAGES
-        if len(messages) > MAX_MESSAGES:
-            messages.pop(0)
+    # Keep only last MAX_MESSAGES
+    if len(messages) > MAX_MESSAGES:
+        messages.pop(0)
 
-        return JSONResponse({"success": True, "message_id": msg["id"]})
+    return JSONResponse({"success": True, "message_id": msg["id"]})
 
-    @web_app.get("/messages")
-    async def get_messages(since: int = 0):
-        """Get messages since a specific message ID."""
-        new_messages = [msg for msg in messages if msg["id"] > since]
-        return JSONResponse({"messages": new_messages})
+@web_app.get("/messages")
+async def get_messages(since: int = 0):
+    """Get messages since a specific message ID."""
+    new_messages = [msg for msg in messages if msg["id"] > since]
+    return JSONResponse({"messages": new_messages})
 
-    @web_app.get("/health")
-    async def health_check():
-        """Health check endpoint."""
-        return JSONResponse({"status": "healthy", "message_count": len(messages)})
+@web_app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return JSONResponse({"status": "healthy", "message_count": len(messages)})
 
+# Expose the FastAPI app to Modal
+@app.function(image=image)
+@modal.asgi_app()
+def fastapi_app():
     return web_app
