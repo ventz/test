@@ -40,6 +40,8 @@ async def get_chat_interface():
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tesla Chat">
+    <link rel="manifest" href="/manifest.json">
     <title>Chat</title>
     <style>
         * {
@@ -417,6 +419,9 @@ async def get_chat_interface():
                 })
             });
 
+            // Request notification permission
+            requestNotificationPermission();
+
             // Start polling for messages
             loadMessages();
             pollInterval = setInterval(loadMessages, 2000); // Poll every 2 seconds
@@ -478,6 +483,11 @@ async def get_chat_interface():
                         if (msg.id > lastMessageId) {
                             appendMessage(msg);
                             lastMessageId = msg.id;
+
+                            // Show notification if window not focused and message is from another user
+                            if (!isWindowFocused && notificationsEnabled && msg.username !== username && msg.type !== 'system') {
+                                showNotification(msg);
+                            }
                         }
                     });
                 }
@@ -523,6 +533,24 @@ async def get_chat_interface():
             container.prepend(messageDiv);
         }
 
+        function showNotification(msg) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification(`${msg.username}`, {
+                    body: msg.message,
+                    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23667eea'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>💬</text></svg>",
+                    badge: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23667eea'/></svg>",
+                    vibrate: [200, 100, 200],
+                    tag: 'chat-message',
+                    requireInteraction: false
+                });
+
+                notification.onclick = function() {
+                    window.focus();
+                    notification.close();
+                };
+            }
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -550,11 +578,51 @@ async def get_chat_interface():
             }
         });
 
+        // Register service worker and request notification permission
+        let notificationsEnabled = false;
+        if ('serviceWorker' in navigator && 'Notification' in window) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered:', registration);
+
+                    // Request notification permission after username is set
+                    if (Notification.permission === 'default') {
+                        // Will ask for permission after user sets username
+                    } else if (Notification.permission === 'granted') {
+                        notificationsEnabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+
+        async function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    notificationsEnabled = true;
+                    console.log('Notifications enabled');
+                }
+            }
+        }
+
+        // Track if window is focused
+        let isWindowFocused = true;
+        window.addEventListener('focus', () => {
+            isWindowFocused = true;
+        });
+        window.addEventListener('blur', () => {
+            isWindowFocused = false;
+        });
+
         // Check for saved username on page load
         const savedUsername = localStorage.getItem('chatUsername');
         if (savedUsername) {
             username = savedUsername;
             activateChat();
+            // Request notifications after auto-login
+            setTimeout(requestNotificationPermission, 1000);
         } else {
             // Focus username input if no saved username
             document.getElementById('usernameInput').focus();
@@ -620,6 +688,67 @@ async def get_messages(since: int = 0):
 async def health_check():
     """Health check endpoint."""
     return JSONResponse({"status": "healthy", "message_count": len(messages)})
+
+@web_app.get("/manifest.json")
+async def get_manifest():
+    """Serve PWA manifest for Add to Home Screen."""
+    manifest = {
+        "name": "Tesla Car Chat",
+        "short_name": "Chat",
+        "description": "Real-time chat for Tesla cars",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#667eea",
+        "theme_color": "#667eea",
+        "icons": [
+            {
+                "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23667eea'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>💬</text></svg>",
+                "sizes": "512x512",
+                "type": "image/svg+xml"
+            }
+        ]
+    }
+    return JSONResponse(manifest)
+
+@web_app.get("/service-worker.js")
+async def get_service_worker():
+    """Serve service worker for notifications."""
+    sw_content = """
+self.addEventListener('install', (event) => {
+    console.log('Service worker installed');
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+    console.log('Service worker activated');
+    event.waitUntil(clients.claim());
+});
+
+self.addEventListener('push', (event) => {
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || 'New Message';
+    const options = {
+        body: data.body || 'You have a new message',
+        icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23667eea'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='Arial'>💬</text></svg>",
+        badge: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23667eea'/></svg>",
+        vibrate: [200, 100, 200],
+        tag: 'chat-message',
+        requireInteraction: false
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow('/')
+    );
+});
+"""
+    return HTMLResponse(content=sw_content, media_type="application/javascript")
 
 # Helper functions for persistent storage
 def load_messages():
