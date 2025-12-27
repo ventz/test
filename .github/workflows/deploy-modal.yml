@@ -20,8 +20,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Modal
+      - name: Install dependencies
         run: |
+          pip install -r requirements.txt
           pip install modal
 
       - name: Deploy to Modal
