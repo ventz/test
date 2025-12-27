@@ -31,7 +31,7 @@ async def get_chat_interface():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesla Car Chat</title>
+    <title>Tesla Chat</title>
     <style>
         * {
             margin: 0;
@@ -41,92 +41,73 @@ async def get_chat_interface():
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            overflow: hidden;
         }
 
         .chat-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
-            max-width: 600px;
-            height: 80vh;
-            max-height: 700px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
         .username-section {
-            padding: 15px;
-            background: #f7f7f7;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 10px;
+            background: #667eea;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
         .username-section input {
             flex: 1;
-            padding: 10px 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 14px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
         .username-section button {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
+            padding: 8px 16px;
+            background: white;
+            color: #667eea;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
         }
 
-        .username-section button:hover {
-            background: #5568d3;
-        }
-
         .current-user {
-            padding: 10px 20px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            font-size: 14px;
+            padding: 6px 10px;
+            background: #667eea;
+            color: white;
+            font-size: 12px;
             text-align: center;
         }
 
         .messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 10px;
             background: #fafafa;
+            display: flex;
+            flex-direction: column-reverse;
         }
 
         .message {
-            margin-bottom: 15px;
-            animation: slideIn 0.3s ease-out;
+            margin-bottom: 10px;
+            animation: slideIn 0.2s ease-out;
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(-10px);
             }
             to {
                 opacity: 1;
@@ -169,18 +150,18 @@ async def get_chat_interface():
         }
 
         .input-section {
-            padding: 15px;
+            padding: 8px;
             background: white;
             border-top: 1px solid #e0e0e0;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .input-section input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 2px solid #ddd;
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 16px;
         }
 
@@ -190,11 +171,11 @@ async def get_chat_interface():
         }
 
         .input-section button {
-            padding: 12px 25px;
+            padding: 10px 20px;
             background: #667eea;
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
@@ -210,35 +191,30 @@ async def get_chat_interface():
         }
 
         .status {
-            padding: 5px 10px;
-            background: #fff3cd;
-            color: #856404;
+            padding: 4px 8px;
+            background: #d4edda;
+            color: #155724;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">
-            🚗 Tesla Car Chat 🚗
-        </div>
-
         <div class="username-section" id="usernameSection">
-            <input type="text" id="usernameInput" placeholder="Enter your username..." maxlength="20">
-            <button onclick="setUsername()">Set Username</button>
+            <input type="text" id="usernameInput" placeholder="Your name..." maxlength="20">
+            <button onclick="setUsername()">Start</button>
         </div>
 
         <div class="current-user" id="currentUser" style="display: none;">
-            Chatting as: <strong id="displayUsername"></strong>
+            <strong id="displayUsername"></strong>
         </div>
 
         <div class="status" id="status">Connected</div>
 
         <div class="messages-container" id="messagesContainer">
-            <div style="text-align: center; color: #999; margin-top: 50px;">
-                <h3>Welcome to Tesla Car Chat!</h3>
-                <p style="margin-top: 10px;">Set your username to start chatting</p>
+            <div style="text-align: center; color: #999; padding: 20px;">
+                <p>Enter your name to start chatting</p>
             </div>
         </div>
 
@@ -322,9 +298,6 @@ async def get_chat_interface():
                             lastMessageId = msg.id;
                         }
                     });
-
-                    // Scroll to bottom
-                    container.scrollTop = container.scrollHeight;
                 }
 
                 updateStatus('Connected', false);
@@ -349,7 +322,7 @@ async def get_chat_interface():
                 <div class="message-content">${escapeHtml(msg.message)}</div>
             `;
 
-            container.appendChild(messageDiv);
+            container.prepend(messageDiv);
         }
 
         function escapeHtml(text) {
