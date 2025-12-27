@@ -231,6 +231,7 @@ async def get_chat_interface():
                 background: #fff;
                 border-bottom: 1px solid #e5e5e5;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                order: 0;
             }
 
             .username-section input {
@@ -257,6 +258,7 @@ async def get_chat_interface():
                 border-bottom: 1px solid #e5e5e5;
                 font-size: 13px;
                 color: #666;
+                order: 1;
             }
 
             .messages-container {
@@ -265,6 +267,7 @@ async def get_chat_interface():
                 background: #f5f5f5;
                 flex-direction: column-reverse;
                 justify-content: flex-start;
+                order: 2;
             }
 
             .message {
@@ -307,6 +310,7 @@ async def get_chat_interface():
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+                order: 3;
             }
 
             .input-section input {
