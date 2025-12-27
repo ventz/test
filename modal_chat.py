@@ -323,7 +323,7 @@ async def get_chat_interface():
 
             .input-section {
                 padding: 12px 16px;
-                padding-bottom: calc(80px + env(safe-area-inset-bottom));
+                padding-bottom: calc(95px + env(safe-area-inset-bottom));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
