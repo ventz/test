@@ -232,6 +232,9 @@ async def get_chat_interface():
             .chat-container {
                 border-radius: 0;
                 background: #f5f5f5;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
             }
 
             .username-section {
@@ -280,6 +283,8 @@ async def get_chat_interface():
                 justify-content: flex-start;
                 order: 2;
                 flex: 1 1 auto;
+                overflow-y: auto;
+                min-height: 0;
             }
 
             .message {
@@ -317,17 +322,20 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 8px 16px;
-                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+                padding: 12px 16px;
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
-                box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+                box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
                 order: 3;
                 flex: 0 0 auto;
+                display: flex;
+                gap: 8px;
             }
 
             .input-section input {
-                padding: 10px 16px;
+                flex: 1;
+                padding: 12px 16px;
                 border-radius: 20px;
                 font-size: 17px;
                 border: 1px solid #e5e5e5;
@@ -335,10 +343,13 @@ async def get_chat_interface():
             }
 
             .input-section button {
-                padding: 10px 20px;
+                padding: 12px 24px;
                 border-radius: 20px;
                 font-size: 17px;
                 background: #007AFF;
+                color: white;
+                border: none;
+                font-weight: 600;
             }
 
             .input-section button:hover {
