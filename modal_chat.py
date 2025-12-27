@@ -270,6 +270,7 @@ async def get_chat_interface():
 
                 if (response.ok) {
                     input.value = '';
+                    input.focus(); // Keep keyboard open for next message
                     loadMessages(); // Immediately load messages after sending
                 }
             } catch (error) {
