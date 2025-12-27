@@ -259,13 +259,15 @@ async def get_chat_interface():
             }
 
             .current-user {
-                padding: 8px 16px;
-                padding-top: calc(8px + env(safe-area-inset-top));
-                background: #fff;
-                border-bottom: 1px solid #e5e5e5;
-                font-size: 13px;
-                color: #666;
+                padding: 12px 16px;
+                padding-top: calc(12px + env(safe-area-inset-top));
+                background: #007AFF;
+                border-bottom: 1px solid #0051D5;
+                font-size: 15px;
+                color: #fff;
                 order: 1;
+                text-align: center;
+                font-weight: 600;
             }
 
             .messages-container {
