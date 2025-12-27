@@ -352,7 +352,7 @@ async def get_chat_interface():
             <button onclick="setUsername()">Start</button>
         </div>
 
-        <div class="current-user" id="currentUser" style="display: none;">
+        <div class="current-user" id="currentUser" style="display: none; cursor: pointer;" onclick="changeUsername()" title="Click to change username">
             <strong id="displayUsername"></strong>
         </div>
 
@@ -385,6 +385,14 @@ async def get_chat_interface():
             }
 
             username = newUsername;
+
+            // Save username to localStorage for future visits
+            localStorage.setItem('chatUsername', username);
+
+            activateChat();
+        }
+
+        async function activateChat() {
             document.getElementById('displayUsername').textContent = username;
             document.getElementById('currentUser').style.display = 'block';
             document.getElementById('usernameSection').style.display = 'none';
@@ -408,6 +416,16 @@ async def get_chat_interface():
             // Start polling for messages
             loadMessages();
             pollInterval = setInterval(loadMessages, 2000); // Poll every 2 seconds
+        }
+
+        function changeUsername() {
+            // Allow user to change their username by clicking on it
+            const newName = prompt('Enter new username:', username);
+            if (newName && newName.trim()) {
+                username = newName.trim();
+                localStorage.setItem('chatUsername', username);
+                document.getElementById('displayUsername').textContent = username;
+            }
         }
 
         async function sendMessage() {
@@ -528,8 +546,15 @@ async def get_chat_interface():
             }
         });
 
-        // Focus username input on load
-        document.getElementById('usernameInput').focus();
+        // Check for saved username on page load
+        const savedUsername = localStorage.getItem('chatUsername');
+        if (savedUsername) {
+            username = savedUsername;
+            activateChat();
+        } else {
+            // Focus username input if no saved username
+            document.getElementById('usernameInput').focus();
+        }
 
         // Handle disconnect
         window.addEventListener('beforeunload', function() {
