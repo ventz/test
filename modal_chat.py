@@ -566,7 +566,7 @@ async def send_message(request: Request):
         "id": len(messages) + 1,
         "username": username[:20],  # Limit username length
         "message": message[:500],  # Limit message length
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.utcnow().isoformat() + 'Z',  # Add Z to indicate UTC
         "type": msg_type  # Include message type
     }
 
