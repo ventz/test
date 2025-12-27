@@ -56,10 +56,10 @@ async def get_chat_interface():
         }
 
         .username-section {
-            padding: 10px;
+            padding: 8px;
             background: #667eea;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
         }
 
@@ -83,10 +83,10 @@ async def get_chat_interface():
         }
 
         .current-user {
-            padding: 5px 10px;
+            padding: 4px 8px;
             background: #667eea;
             color: white;
-            font-size: 13px;
+            font-size: 12px;
             text-align: center;
             font-weight: 600;
         }
@@ -94,14 +94,14 @@ async def get_chat_interface():
         .messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 8px;
             background: #fafafa;
             display: flex;
             flex-direction: column;
         }
 
         .message {
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             animation: slideIn 0.2s ease-out;
         }
 
@@ -117,9 +117,9 @@ async def get_chat_interface():
         }
 
         .message-header {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .message-username {
@@ -134,12 +134,12 @@ async def get_chat_interface():
 
         .message-content {
             background: white;
-            padding: 12px 15px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             word-wrap: break-word;
             font-size: 16px;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .message.own .message-content {
@@ -153,16 +153,16 @@ async def get_chat_interface():
         }
 
         .input-section {
-            padding: 8px;
+            padding: 6px;
             background: white;
             border-top: 1px solid #e0e0e0;
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .input-section input {
             flex: 1;
-            padding: 12px 14px;
+            padding: 10px 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 18px;
@@ -174,7 +174,7 @@ async def get_chat_interface():
         }
 
         .input-section button {
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: #667eea;
             color: white;
             border: none;
