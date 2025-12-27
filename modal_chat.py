@@ -65,29 +65,30 @@ async def get_chat_interface():
 
         .username-section input {
             flex: 1;
-            padding: 8px 12px;
+            padding: 12px 14px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .username-section button {
-            padding: 8px 16px;
+            padding: 12px 20px;
             background: white;
             color: #667eea;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
         }
 
         .current-user {
-            padding: 6px 10px;
+            padding: 5px 10px;
             background: #667eea;
             color: white;
-            font-size: 12px;
+            font-size: 13px;
             text-align: center;
+            font-weight: 600;
         }
 
         .messages-container {
@@ -96,7 +97,7 @@ async def get_chat_interface():
             padding: 10px;
             background: #fafafa;
             display: flex;
-            flex-direction: column-reverse;
+            flex-direction: column;
         }
 
         .message {
@@ -137,6 +138,8 @@ async def get_chat_interface():
             border-radius: 12px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.4;
         }
 
         .message.own .message-content {
@@ -159,10 +162,10 @@ async def get_chat_interface():
 
         .input-section input {
             flex: 1;
-            padding: 10px 12px;
+            padding: 12px 14px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .input-section input:focus {
@@ -171,13 +174,13 @@ async def get_chat_interface():
         }
 
         .input-section button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             transition: background 0.2s;
         }
@@ -191,11 +194,7 @@ async def get_chat_interface():
         }
 
         .status {
-            padding: 4px 8px;
-            background: #d4edda;
-            color: #155724;
-            text-align: center;
-            font-size: 11px;
+            display: none;
         }
     </style>
 </head>
@@ -312,7 +311,11 @@ async def get_chat_interface():
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message' + (msg.username === username ? ' own' : '');
 
-            const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const time = new Date(msg.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute:'2-digit',
+                timeZone: 'America/New_York'
+            });
 
             messageDiv.innerHTML = `
                 <div class="message-header">
