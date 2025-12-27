@@ -13,7 +13,56 @@ A simple, lightweight two-user chat application designed for Tesla web browsers,
 
 ## Quick Start
 
-### Prerequisites
+Choose either **Option A** (Automatic - Recommended) or **Option B** (Manual):
+
+### Option A: Automatic Deployment via GitHub Actions (Recommended)
+
+This automatically deploys your app to Modal whenever you push code to GitHub!
+
+**One-time setup:**
+
+1. **Create a Modal account** at https://modal.com (if you haven't already)
+
+2. **Generate Modal API token (can do this from your phone!):**
+
+   **Web Method (Mobile-Friendly):**
+   - Go to https://modal.com/settings/tokens
+   - Click "Create new token"
+   - Give it a name like "Tesla Chat GitHub"
+   - Copy both values:
+     - `MODAL_TOKEN_ID` (starts with "ak-")
+     - `MODAL_TOKEN_SECRET` (starts with "as-")
+
+   **CLI Method (if on computer):**
+   ```bash
+   pip install modal
+   modal setup
+   modal token new
+   ```
+
+3. **Add secrets to GitHub:**
+   - Go to your GitHub repo: Settings → Secrets and variables → Actions → New repository secret
+   - Add secret: `MODAL_TOKEN_ID` = your token ID value
+   - Add secret: `MODAL_TOKEN_SECRET` = your token secret value
+
+4. **Push your code** (or manually trigger the workflow from GitHub Actions tab)
+
+   The app will automatically deploy! 🎉
+
+5. **Find your URL:**
+   - Go to https://modal.com/apps
+   - Find "tesla-car-chat"
+   - Copy the URL (format: `https://YOUR-WORKSPACE--tesla-car-chat-fastapi-app.modal.run`)
+   - Open this URL in your Tesla browsers!
+
+**Subsequent deployments:**
+Just push code to the branch - it auto-deploys! ✨
+
+---
+
+### Option B: Manual Deployment via CLI
+
+**Prerequisites:**
 
 1. Install Modal CLI:
 ```bash
@@ -25,7 +74,7 @@ pip install modal
 modal setup
 ```
 
-### Deploy to Modal
+**Deploy:**
 
 1. Deploy the application:
 ```bash

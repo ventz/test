@@ -1,0 +1,40 @@
+name: Deploy to Modal
+
+on:
+  push:
+    branches:
+      - claude/tesla-car-chat-app-Er0Gy
+      - main
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Modal
+        run: |
+          pip install modal
+
+      - name: Deploy to Modal
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: |
+          modal deploy modal_chat.py
+
+      - name: Get deployment URL
+        run: |
+          echo "✅ Deployment successful!"
+          echo "🚗 Your Tesla Chat app is live at:"
+          echo "https://YOUR-WORKSPACE--tesla-car-chat-fastapi-app.modal.run"
+          echo ""
+          echo "Note: Replace YOUR-WORKSPACE with your actual Modal workspace name"
