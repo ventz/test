@@ -36,6 +36,4 @@ jobs:
         run: |
           echo "✅ Deployment successful!"
           echo "🚗 Your Tesla Chat app is live at:"
-          echo "https://YOUR-WORKSPACE--tesla-car-chat-fastapi-app.modal.run"
-          echo ""
-          echo "Note: Replace YOUR-WORKSPACE with your actual Modal workspace name"
+          echo "https://ventz--tesla-car-chat-fastapi-app.modal.run"
