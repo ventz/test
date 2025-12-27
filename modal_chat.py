@@ -202,49 +202,60 @@ async def get_chat_interface():
         /* iPhone-specific styles - portrait mode, smaller screens */
         @media (max-width: 768px) and (orientation: portrait) {
             body {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: #f5f5f5;
             }
 
             .chat-container {
                 border-radius: 0;
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
+                background: #f5f5f5;
             }
 
             .username-section {
                 padding: 12px 16px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                padding-top: calc(12px + env(safe-area-inset-top));
+                background: #fff;
+                border-bottom: 1px solid #e5e5e5;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }
 
             .username-section input {
                 padding: 14px 16px;
                 border-radius: 12px;
                 font-size: 17px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                background: #f7f7f7;
             }
 
             .username-section button {
                 padding: 14px 24px;
                 border-radius: 12px;
                 font-size: 17px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                background: #007AFF;
+                color: white;
             }
 
             .current-user {
                 padding: 8px 16px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding-top: calc(8px + env(safe-area-inset-top));
+                background: #fff;
+                border-bottom: 1px solid #e5e5e5;
                 font-size: 13px;
+                color: #666;
             }
 
             .messages-container {
                 padding: 16px;
+                padding-bottom: 8px;
                 background: #f5f5f5;
+                flex-direction: column-reverse;
+                justify-content: flex-start;
             }
 
             .message {
-                margin-bottom: 12px;
-                max-width: 80%;
+                margin-top: 12px;
+                margin-bottom: 0;
+                max-width: 75%;
             }
 
             .message-header {
@@ -253,11 +264,12 @@ async def get_chat_interface():
             }
 
             .message-content {
-                padding: 12px 16px;
+                padding: 10px 14px;
                 border-radius: 18px;
                 font-size: 17px;
-                line-height: 1.4;
+                line-height: 1.35;
                 box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                background: #fff;
             }
 
             .message.own {
@@ -270,29 +282,38 @@ async def get_chat_interface():
                 margin-left: 0;
             }
 
+            .message.own .message-header {
+                text-align: right;
+            }
+
             .input-section {
-                padding: 12px 16px;
-                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+                padding: 8px 16px;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+                box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
             }
 
             .input-section input {
-                padding: 12px 16px;
+                padding: 10px 16px;
                 border-radius: 20px;
                 font-size: 17px;
                 border: 1px solid #e5e5e5;
+                background: #f7f7f7;
             }
 
             .input-section button {
-                padding: 12px 24px;
+                padding: 10px 20px;
                 border-radius: 20px;
                 font-size: 17px;
                 background: #007AFF;
             }
 
             .input-section button:hover {
+                background: #0051D5;
+            }
+
+            .input-section button:active {
                 background: #0051D5;
             }
         }
