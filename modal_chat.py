@@ -396,7 +396,7 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px calc(32px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+                padding: 12px calc(20px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
@@ -431,9 +431,9 @@ async def get_chat_interface():
             }
 
             .location-btn {
-                padding: 12px 16px;
+                padding: 12px 12px;
                 background: #0ea5e9;
-                min-width: 50px;
+                min-width: 44px;
             }
 
             .input-section button:hover,
@@ -588,7 +588,7 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px calc(32px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+                padding: 12px calc(20px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #16213e;
                 border-top: 1px solid #0f3460;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
