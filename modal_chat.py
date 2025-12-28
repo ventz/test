@@ -396,7 +396,7 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px 16px calc(95px + env(safe-area-inset-bottom));
+                padding: 12px calc(16px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
@@ -584,6 +584,7 @@ async def get_chat_interface():
             }
 
             .input-section {
+                padding: 12px calc(16px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #16213e;
                 border-top: 1px solid #0f3460;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
@@ -833,8 +834,8 @@ async def get_chat_interface():
                 tempId = 'temp_' + Date.now() + '_' + Math.random();
             }
 
-            // Show optimistically
-            if (messageData.username === username && messageData.type !== 'system') {
+            // Show optimistically (only if not already shown)
+            if (messageData.username === username && messageData.type !== 'system' && !pendingMessages.has(tempId)) {
                 displayOptimisticMessage(messageData, tempId);
             }
 
@@ -855,9 +856,13 @@ async def get_chat_interface():
 
                 if (response.ok) {
                     const result = await response.json();
-                    updateMessageStatus(tempId, 'sent');
+                    // Remove optimistic message - real one will come from server
+                    const messageDiv = pendingMessages.get(tempId);
+                    if (messageDiv && messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
                     pendingMessages.delete(tempId);
-                    // Reload to get server ID
+                    // Reload to get server message
                     setTimeout(loadMessages, 200);
                 } else {
                     throw new Error('Server error');
