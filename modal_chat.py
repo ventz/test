@@ -396,7 +396,7 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px calc(24px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+                padding: 12px calc(32px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
@@ -409,7 +409,8 @@ async def get_chat_interface():
             }
 
             .input-section input {
-                flex: 1;
+                flex: 1 1 auto;
+                min-width: 0;
                 padding: 12px 16px;
                 border-radius: 20px;
                 font-size: 17px;
@@ -587,13 +588,15 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px calc(24px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+                padding: 12px calc(32px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #16213e;
                 border-top: 1px solid #0f3460;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
             }
 
             .input-section input {
+                flex: 1 1 auto;
+                min-width: 0;
                 background: #1a1a2e;
                 color: #e0e0e0;
                 border: 1px solid #2d3561;
