@@ -425,11 +425,14 @@ async def get_chat_interface():
                 color: white;
                 border: none;
                 font-weight: 600;
+                flex-shrink: 0;
+                min-width: 80px;
             }
 
             .location-btn {
                 padding: 12px 16px;
                 background: #0ea5e9;
+                min-width: 50px;
             }
 
             .input-section button:hover,
@@ -639,56 +642,46 @@ async def get_chat_interface():
         let notificationsEnabled = false;
         let isWindowFocused = true;
         let isOnline = navigator.onLine;
-        let messageQueue = [];
-        let pendingMessages = new Map(); // Track pending messages
-        let retryTimeouts = new Map(); // Track retry timeouts
-
-        // Load queue from localStorage
-        function loadQueue() {
-            try {
-                const saved = localStorage.getItem('messageQueue');
-                if (saved) {
-                    messageQueue = JSON.parse(saved);
-                }
-            } catch (e) {
-                messageQueue = [];
-            }
-        }
-
-        // Save queue to localStorage
-        function saveQueue() {
-            try {
-                localStorage.setItem('messageQueue', JSON.stringify(messageQueue));
-            } catch (e) {
-                console.error('Failed to save queue');
-            }
-        }
 
         // Update connection status UI
         function updateConnectionStatus() {
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('connectionText');
+            const sendBtn = document.getElementById('sendButton');
+            const locationBtn = document.getElementById('locationBtn');
+            const messageInput = document.getElementById('messageInput');
 
             if (!dot || !text) return;
 
             if (!isOnline) {
                 dot.className = 'status-dot offline';
                 text.textContent = 'Offline';
-            } else if (navigator.connection) {
-                const type = navigator.connection.effectiveType;
-                if (type === 'slow-2g' || type === '2g') {
-                    dot.className = 'status-dot slow';
-                    text.textContent = '2G';
-                } else if (type === '3g') {
-                    dot.className = 'status-dot slow';
-                    text.textContent = '3G';
+                if (sendBtn) sendBtn.disabled = true;
+                if (locationBtn) locationBtn.disabled = true;
+                if (messageInput) messageInput.disabled = true;
+            } else {
+                if (username) {
+                    if (sendBtn) sendBtn.disabled = false;
+                    if (locationBtn) locationBtn.disabled = false;
+                    if (messageInput) messageInput.disabled = false;
+                }
+
+                if (navigator.connection) {
+                    const type = navigator.connection.effectiveType;
+                    if (type === 'slow-2g' || type === '2g') {
+                        dot.className = 'status-dot slow';
+                        text.textContent = '2G';
+                    } else if (type === '3g') {
+                        dot.className = 'status-dot slow';
+                        text.textContent = '3G';
+                    } else {
+                        dot.className = 'status-dot';
+                        text.textContent = 'Online';
+                    }
                 } else {
                     dot.className = 'status-dot';
                     text.textContent = 'Online';
                 }
-            } else {
-                dot.className = 'status-dot';
-                text.textContent = 'Online';
             }
         }
 
@@ -696,7 +689,6 @@ async def get_chat_interface():
         window.addEventListener('online', () => {
             isOnline = true;
             updateConnectionStatus();
-            processQueue(); // Process queued messages
         });
 
         window.addEventListener('offline', () => {
@@ -734,13 +726,9 @@ async def get_chat_interface():
             $('displayUsername').textContent = username;
             $('currentUser').style.display = 'flex';
             $('usernameSection').style.display = 'none';
-            $('messageInput').disabled = false;
-            $('sendButton').disabled = false;
-            $('locationBtn').disabled = false;
             $('messageInput').focus();
 
-            // Load any queued messages
-            loadQueue();
+            updateConnectionStatus();
 
             // Send join system message
             await sendMessageToServer({
@@ -750,14 +738,10 @@ async def get_chat_interface():
             });
 
             requestNotificationPermission();
-            updateConnectionStatus();
 
             // Start polling for messages
             loadMessages();
             pollInterval = setInterval(loadMessages, 1500);
-
-            // Process any queued messages
-            processQueue();
         }
 
         function changeUsername() {
@@ -773,7 +757,7 @@ async def get_chat_interface():
             const input = $('messageInput');
             const message = input.value.trim();
 
-            if (!message || !username) return;
+            if (!message || !username || !isOnline) return;
 
             const messageData = {
                 username: username,
@@ -785,13 +769,18 @@ async def get_chat_interface():
             input.value = '';
             input.focus();
 
-            // Send message (will queue if offline)
+            // Send message
             await sendMessageToServer(messageData);
         }
 
         async function shareLocation() {
             if (!navigator.geolocation) {
                 alert('Geolocation not supported');
+                return;
+            }
+
+            if (!isOnline) {
+                alert('Cannot share location while offline');
                 return;
             }
 
@@ -823,29 +812,13 @@ async def get_chat_interface():
             } catch (error) {
                 alert('Could not get location: ' + error.message);
             } finally {
-                btn.disabled = false;
+                btn.disabled = !isOnline;
                 btn.textContent = '📍';
             }
         }
 
-        async function sendMessageToServer(messageData, tempId = null) {
-            // Generate temporary ID for optimistic UI
-            if (!tempId) {
-                tempId = 'temp_' + Date.now() + '_' + Math.random();
-            }
-
-            // Show optimistically (only if not already shown)
-            if (messageData.username === username && messageData.type !== 'system' && !pendingMessages.has(tempId)) {
-                displayOptimisticMessage(messageData, tempId);
-            }
-
-            if (!isOnline) {
-                // Queue for later
-                messageQueue.push({ data: messageData, tempId: tempId, retries: 0 });
-                saveQueue();
-                updateMessageStatus(tempId, 'pending');
-                return;
-            }
+        async function sendMessageToServer(messageData) {
+            if (!isOnline) return;
 
             try {
                 const response = await fetch('/send', {
@@ -855,147 +828,13 @@ async def get_chat_interface():
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
-                    // Remove optimistic message - real one will come from server
-                    const messageDiv = pendingMessages.get(tempId);
-                    if (messageDiv && messageDiv.parentNode) {
-                        messageDiv.remove();
-                    }
-                    pendingMessages.delete(tempId);
-                    // Reload to get server message
-                    setTimeout(loadMessages, 200);
+                    // Reload to get new message
+                    setTimeout(loadMessages, 100);
                 } else {
-                    throw new Error('Server error');
+                    alert('Failed to send message. Please try again.');
                 }
             } catch (error) {
-                // Queue for retry
-                messageQueue.push({ data: messageData, tempId: tempId, retries: 0 });
-                saveQueue();
-                updateMessageStatus(tempId, 'failed');
-                scheduleRetry(tempId);
-            }
-        }
-
-        function scheduleRetry(tempId) {
-            // Find message in queue
-            const queueItem = messageQueue.find(item => item.tempId === tempId);
-            if (!queueItem) return;
-
-            // Exponential backoff: 2s, 4s, 8s, 16s, 32s
-            const delay = Math.min(32000, 2000 * Math.pow(2, queueItem.retries));
-            queueItem.retries++;
-
-            const timeoutId = setTimeout(() => {
-                retryMessage(tempId);
-            }, delay);
-
-            retryTimeouts.set(tempId, timeoutId);
-        }
-
-        async function retryMessage(tempId) {
-            const index = messageQueue.findIndex(item => item.tempId === tempId);
-            if (index === -1) return;
-
-            const queueItem = messageQueue[index];
-
-            // Remove from queue
-            messageQueue.splice(index, 1);
-            saveQueue();
-
-            // Retry send
-            await sendMessageToServer(queueItem.data, tempId);
-        }
-
-        async function processQueue() {
-            if (!isOnline || messageQueue.length === 0) return;
-
-            // Process queue one at a time
-            while (messageQueue.length > 0 && isOnline) {
-                const queueItem = messageQueue[0];
-                messageQueue.splice(0, 1);
-                saveQueue();
-
-                await sendMessageToServer(queueItem.data, queueItem.tempId);
-
-                // Small delay between sends
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-        }
-
-        function displayOptimisticMessage(messageData, tempId) {
-            const container = $('messagesContainer');
-
-            // Clear welcome message
-            if (container.children.length === 1 && container.children[0].style.textAlign === 'center') {
-                container.innerHTML = '';
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message own pending';
-            messageDiv.dataset.tempId = tempId;
-
-            const time = new Date().toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'America/New_York'
-            });
-
-            const statusHtml = '<span class="message-status pending">⏳ Sending...</span>';
-
-            if (messageData.type === 'location') {
-                const loc = messageData.location;
-                messageDiv.innerHTML = `
-                    <div class="message-header">
-                        <span class="message-username">${escapeHtml(messageData.username)}</span>
-                        <span class="message-time">${time}</span>
-                        ${statusHtml}
-                    </div>
-                    <div class="message-content location-message">
-                        📍 <a href="${loc.url}" target="_blank" class="location-link">Location: ${loc.lat}, ${loc.lon}</a>
-                    </div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="message-header">
-                        <span class="message-username">${escapeHtml(messageData.username)}</span>
-                        <span class="message-time">${time}</span>
-                        ${statusHtml}
-                    </div>
-                    <div class="message-content">${escapeHtml(messageData.message)}</div>
-                `;
-            }
-
-            container.prepend(messageDiv);
-            pendingMessages.set(tempId, messageDiv);
-        }
-
-        function updateMessageStatus(tempId, status) {
-            const messageDiv = pendingMessages.get(tempId);
-            if (!messageDiv) return;
-
-            const statusSpan = messageDiv.querySelector('.message-status');
-            if (!statusSpan) return;
-
-            messageDiv.classList.remove('pending', 'failed');
-
-            if (status === 'sent') {
-                statusSpan.innerHTML = '✓';
-                statusSpan.className = 'message-status';
-                // Remove after a moment
-                setTimeout(() => {
-                    if (statusSpan.parentNode) {
-                        statusSpan.remove();
-                    }
-                }, 2000);
-            } else if (status === 'pending') {
-                messageDiv.classList.add('pending');
-                statusSpan.innerHTML = '⏳ Queued';
-                statusSpan.className = 'message-status pending';
-            } else if (status === 'failed') {
-                messageDiv.classList.add('failed');
-                statusSpan.innerHTML = '✗ Retry';
-                statusSpan.className = 'message-status failed';
-                statusSpan.onclick = () => retryMessage(tempId);
+                alert('Network error. Please check your connection.');
             }
         }
 
