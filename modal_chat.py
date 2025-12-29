@@ -450,91 +450,91 @@ async def get_chat_interface():
         /* Dark mode */
         @media (prefers-color-scheme: dark) {
             body {
-                background: #1a1a2e;
+                background: #1c1c1e;
             }
 
             .chat-container {
-                background: #16213e;
+                background: #2c2c2e;
             }
 
             .username-section {
-                background: #0f3460;
+                background: #3a3a3c;
             }
 
             .username-section input {
-                background: #1a1a2e;
-                color: #e0e0e0;
-                border: 1px solid #2d3561;
+                background: #1c1c1e;
+                color: #e5e5e7;
+                border: 1px solid #48484a;
             }
 
             .username-section button {
-                background: #0f3460;
-                color: #e94560;
+                background: #48484a;
+                color: #e5e5e7;
             }
 
             .current-user {
-                background: #0f3460;
-                border-bottom: 1px solid #1a1a2e;
+                background: #3a3a3c;
+                border-bottom: 1px solid #48484a;
             }
 
             .messages-container {
-                background: #0e1525;
+                background: #1c1c1e;
             }
 
             .message-header {
-                color: #a0a0a0;
+                color: #98989d;
             }
 
             .message-username {
-                color: #4a9eff;
+                color: #aeaeb2;
             }
 
             .message-time {
-                color: #6a6a6a;
+                color: #636366;
             }
 
             .message-content {
-                background: #1a1a2e;
-                color: #e0e0e0;
+                background: #2c2c2e;
+                color: #e5e5e7;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             }
 
             .message.own .message-content {
-                background: #0f3460;
-                color: #fff;
+                background: #48484a;
+                color: #e5e5e7;
             }
 
             .location-message {
-                background: #1e3a5f !important;
-                border-left: 3px solid #0ea5e9;
-                color: #93c5fd;
+                background: #3a3a3c !important;
+                border-left: 3px solid #636366;
+                color: #aeaeb2;
             }
 
             .input-section {
-                background: #16213e;
-                border-top: 1px solid #0f3460;
+                background: #2c2c2e;
+                border-top: 1px solid #48484a;
             }
 
             .input-section input {
-                background: #1a1a2e;
-                color: #e0e0e0;
-                border: 2px solid #2d3561;
+                background: #1c1c1e;
+                color: #e5e5e7;
+                border: 2px solid #48484a;
             }
 
             .input-section input:focus {
-                border-color: #4a9eff;
+                border-color: #636366;
             }
 
             .input-section button {
-                background: #e94560;
+                background: #48484a;
             }
 
             .input-section button:hover {
-                background: #c9325a;
+                background: #636366;
             }
 
             .system-message {
-                color: #888;
+                color: #8e8e93;
             }
 
             .system-message-content {
@@ -544,66 +544,66 @@ async def get_chat_interface():
 
         @media (max-width: 768px) and (orientation: portrait) and (prefers-color-scheme: dark) {
             body {
-                background: #0e1525;
+                background: #1c1c1e;
             }
 
             .chat-container {
-                background: #0e1525;
+                background: #1c1c1e;
             }
 
             .username-section {
-                background: #16213e;
-                border-bottom: 1px solid #0f3460;
+                background: #2c2c2e;
+                border-bottom: 1px solid #48484a;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.3);
             }
 
             .username-section input {
-                background: #1a1a2e;
-                color: #e0e0e0;
-                border: 1px solid #2d3561;
+                background: #1c1c1e;
+                color: #e5e5e7;
+                border: 1px solid #48484a;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             }
 
             .username-section button {
-                background: #e94560;
-                color: #fff;
+                background: #48484a;
+                color: #e5e5e7;
             }
 
             .current-user {
-                background: #0f3460;
-                border-bottom: 1px solid #1a1a2e;
+                background: #3a3a3c;
+                border-bottom: 1px solid #48484a;
             }
 
             .messages-container {
-                background: #0e1525;
+                background: #1c1c1e;
             }
 
             .message-content {
-                background: #1a1a2e;
-                color: #e0e0e0;
+                background: #2c2c2e;
+                color: #e5e5e7;
             }
 
             .message.own .message-content {
-                background: #e94560;
+                background: #48484a;
             }
 
             .input-section {
                 padding: 12px calc(20px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
-                background: #16213e;
-                border-top: 1px solid #0f3460;
+                background: #2c2c2e;
+                border-top: 1px solid #48484a;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
             }
 
             .input-section input {
                 flex: 1 1 auto;
                 min-width: 0;
-                background: #1a1a2e;
-                color: #e0e0e0;
-                border: 1px solid #2d3561;
+                background: #1c1c1e;
+                color: #e5e5e7;
+                border: 1px solid #48484a;
             }
 
             .input-section button {
-                background: #e94560;
+                background: #48484a;
             }
         }
     </style>
