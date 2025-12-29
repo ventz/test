@@ -396,7 +396,7 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px calc(20px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+                padding: 12px calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #fff;
                 border-top: 1px solid #e5e5e5;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
@@ -419,7 +419,7 @@ async def get_chat_interface():
             }
 
             .input-section button {
-                padding: 12px 24px;
+                padding: 12px 20px;
                 border-radius: 20px;
                 font-size: 17px;
                 background: #007AFF;
@@ -427,13 +427,14 @@ async def get_chat_interface():
                 border: none;
                 font-weight: 600;
                 flex-shrink: 0;
-                min-width: 80px;
+                min-width: 70px;
             }
 
             .location-btn {
-                padding: 12px 12px;
+                padding: 10px 10px;
                 background: #0ea5e9;
-                min-width: 44px;
+                min-width: 40px;
+                font-size: 16px;
             }
 
             .input-section button:hover,
@@ -588,7 +589,7 @@ async def get_chat_interface():
             }
 
             .input-section {
-                padding: 12px calc(20px + env(safe-area-inset-right)) calc(95px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+                padding: 12px calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
                 background: #2c2c2e;
                 border-top: 1px solid #48484a;
                 box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
@@ -603,7 +604,15 @@ async def get_chat_interface():
             }
 
             .input-section button {
+                padding: 12px 20px;
+                min-width: 70px;
                 background: #48484a;
+            }
+
+            .location-btn {
+                padding: 10px 10px;
+                min-width: 40px;
+                font-size: 16px;
             }
         }
     </style>
